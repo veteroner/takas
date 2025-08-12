@@ -32,8 +32,8 @@ ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(','
 # Application definition
 
 INSTALLED_APPS = [
-    'daphne',  # WebSocket support - must be first
-    'channels',
+    # 'daphne',  # WebSocket support - temporarily disabled for Railway
+    # 'channels',  # WebSocket support - temporarily disabled for Railway
     'market',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -179,14 +179,14 @@ if DEBUG:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 
-# Channels Configuration
-ASGI_APPLICATION = 'config.asgi.application'
+# Channels Configuration (temporarily disabled for Railway)
+# ASGI_APPLICATION = 'config.asgi.application'
 
-CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels.layers.InMemoryChannelLayer',
-    },
-}
+# CHANNEL_LAYERS = {
+#     'default': {
+#         'BACKEND': 'channels.layers.InMemoryChannelLayer',
+#     },
+# }
 
 # Security Settings
 SECURE_BROWSER_XSS_FILTER = True
