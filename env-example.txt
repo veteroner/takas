@@ -1,0 +1,74 @@
+# ===========================================
+# SWAPZY ENVIRONMENT VARIABLES
+# ===========================================
+# Bu dosyayı .env olarak kopyalayın ve değerleri doldurun
+
+# Django Core Settings
+SECRET_KEY=your-secret-key-here-generate-new-one
+DEBUG=False
+ALLOWED_HOSTS=localhost,127.0.0.1,yourdomain.com
+
+# Database Configuration
+# SQLite (Development)
+# DATABASE_URL=sqlite:///db.sqlite3
+
+# PostgreSQL (Production)
+DATABASE_URL=postgresql://username:password@hostname:port/database_name
+
+# Railway PostgreSQL örneği:
+# DATABASE_URL=postgresql://postgres:password@hostname:5432/railway
+
+# Email Configuration
+EMAIL_HOST_USER=your-email@gmail.com
+EMAIL_HOST_PASSWORD=your-app-password
+
+# Security Settings (Production)
+SECURE_SSL_REDIRECT=True
+SESSION_COOKIE_SECURE=True
+CSRF_COOKIE_SECURE=True
+SECURE_HSTS_SECONDS=31536000
+
+# Media Storage Configuration
+# Local storage (Development)
+MEDIA_URL=/media/
+MEDIA_ROOT=media/
+
+# Cloudinary (Production - Optional)
+CLOUDINARY_CLOUD_NAME=your-cloud-name
+CLOUDINARY_API_KEY=your-api-key
+CLOUDINARY_API_SECRET=your-api-secret
+
+# AWS S3 (Production - Alternative)
+AWS_ACCESS_KEY_ID=your-aws-access-key
+AWS_SECRET_ACCESS_KEY=your-aws-secret-key
+AWS_STORAGE_BUCKET_NAME=your-bucket-name
+AWS_S3_REGION_NAME=eu-central-1
+
+# Redis Configuration (Optional)
+REDIS_URL=redis://localhost:6379/0
+
+# Monitoring & Error Tracking
+SENTRY_DSN=your-sentry-dsn-url
+
+# Platform Specific
+# Railway
+RAILWAY_STATIC_URL=https://your-app.railway.app/static/
+RAILWAY_MEDIA_URL=https://your-app.railway.app/media/
+
+# Render
+RENDER_EXTERNAL_HOSTNAME=your-app.onrender.com
+
+# Performance Settings
+DJANGO_SETTINGS_MODULE=config.settings
+PYTHONPATH=.
+
+# Rate Limiting
+RATE_LIMIT_ENABLE=True
+RATE_LIMIT_LOGIN_ATTEMPTS=5
+RATE_LIMIT_LOGIN_WINDOW=300
+
+# File Upload Security
+MAX_IMAGE_SIZE=3145728
+MAX_IMAGES_PER_ITEM=5
+ALLOWED_IMAGE_EXTENSIONS=.jpg,.jpeg,.png,.webp
+

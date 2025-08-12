@@ -1,0 +1,9 @@
+{% extends "market/base.html" %}
+{% block content %}
+  <h2>Teklif Gönder: {{ requested_item.title }}</h2>
+  <form method="post" class="card">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button class="btn" type="submit">Gönder</button>
+  </form>
+{% endblock %}

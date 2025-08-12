@@ -1,0 +1,75 @@
+{% extends "emails/base.html" %}
+
+{% block title %}
+{% if trade.status == 'accepted' %}
+Takas Kabul Edildi! - Swapzy
+{% elif trade.status == 'rejected' %}
+Takas Reddedildi - Swapzy
+{% else %}
+Takas Durumu Güncellendi - Swapzy
+{% endif %}
+{% endblock %}
+
+{% block content %}
+{% if trade.status == 'accepted' %}
+<h2>🎉 Harika Haber! Takas Kabul Edildi!</h2>
+
+<p>Merhaba <strong>{{ recipient.first_name|default:recipient.username }}</strong>,</p>
+
+<p><strong>{{ trade.responder.first_name|default:trade.responder.username }}</strong> takas teklifinizi kabul etti! 🎊</p>
+
+<div class="info-box">
+    <h3>✅ Kabul Edilen Takas</h3>
+    <p><strong>Sizin Ürününüz:</strong> {{ trade.offered_item.title }}</p>
+    <p><strong>Alacağınız Ürün:</strong> {{ trade.requested_item.title }}</p>
+    <p><strong>Takas Tarihi:</strong> {{ trade.updated_at|date:"d.m.Y H:i" }}</p>
+</div>
+
+<p>Artık birbirinizle iletişime geçerek takas detaylarını planlayabilirsiniz!</p>
+
+<a href="{{ site_url }}{% url 'market:trade_detail' trade.pk %}" class="btn">
+    💬 Mesajlaşmaya Başla
+</a>
+
+{% elif trade.status == 'rejected' %}
+<h2>😔 Takas Teklifi Reddedildi</h2>
+
+<p>Merhaba <strong>{{ recipient.first_name|default:recipient.username }}</strong>,</p>
+
+<p>Maalesef <strong>{{ trade.responder.first_name|default:trade.responder.username }}</strong> takas teklifinizi reddetti.</p>
+
+<div class="info-box">
+    <h3>❌ Reddedilen Takas</h3>
+    <p><strong>Teklif Ettiğiniz Ürün:</strong> {{ trade.offered_item.title }}</p>
+    <p><strong>İstediğiniz Ürün:</strong> {{ trade.requested_item.title }}</p>
+</div>
+
+<p>Üzülmeyin! Platformda binlerce farklı ürün var. Yeni takaslar keşfetmeye devam edin!</p>
+
+<a href="{{ site_url }}{% url 'market:swipe_view' %}" class="btn">
+    🔥 Yeni Ürünler Keşfet
+</a>
+
+{% else %}
+<h2>📋 Takas Durumu Güncellendi</h2>
+
+<p>Merhaba <strong>{{ recipient.first_name|default:recipient.username }}</strong>,</p>
+
+<p>Takas durumunuz güncellendi.</p>
+
+<div class="info-box">
+    <h3>📊 Güncel Durum</h3>
+    <p><strong>Durum:</strong> {{ trade.get_status_display }}</p>
+    <p><strong>Ürünler:</strong> {{ trade.offered_item.title }} ↔ {{ trade.requested_item.title }}</p>
+</div>
+
+<a href="{{ site_url }}{% url 'market:trade_detail' trade.pk %}" class="btn">
+    📋 Takas Detayları
+</a>
+{% endif %}
+
+<p>
+    İyi takaslar!<br>
+    <strong>Swapzy Ekibi</strong>
+</p>
+{% endblock %}

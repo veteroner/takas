@@ -1,0 +1,38 @@
+{% extends "emails/base.html" %}
+
+{% block title %}Yeni Mesaj - Swapzy{% endblock %}
+
+{% block content %}
+<h2>💬 Yeni Mesajınız Var!</h2>
+
+<p>Merhaba <strong>{{ recipient.first_name|default:recipient.username }}</strong>,</p>
+
+<p><strong>{{ message.sender.first_name|default:message.sender.username }}</strong> size yeni bir mesaj gönderdi!</p>
+
+<div class="info-box">
+    <h3>📨 Mesaj Detayları</h3>
+    <p><strong>Gönderen:</strong> {{ message.sender.first_name|default:message.sender.username }}</p>
+    <p><strong>Takas:</strong> {{ message.trade.offered_item.title }} ↔ {{ message.trade.requested_item.title }}</p>
+    <p><strong>Tarih:</strong> {{ message.created_at|date:"d.m.Y H:i" }}</p>
+</div>
+
+<div class="info-box">
+    <h3>💭 Mesaj</h3>
+    <p style="font-style: italic; font-size: 16px; border-left: 3px solid #667eea; padding-left: 15px;">
+        "{{ message.content|truncatewords:50 }}"
+    </p>
+</div>
+
+<p>Mesajı okumak ve yanıtlamak için aşağıdaki butona tıklayın:</p>
+
+<a href="{{ site_url }}{% url 'market:trade_detail' message.trade.pk %}" class="btn">
+    💬 Mesajı Yanıtla
+</a>
+
+<p><strong>💡 İpucu:</strong> Hızlı yanıt vermek takas başarı oranınızı artırır!</p>
+
+<p>
+    İyi takaslar!<br>
+    <strong>Swapzy Ekibi</strong>
+</p>
+{% endblock %}

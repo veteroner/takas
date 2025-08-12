@@ -1,0 +1,65 @@
+{% extends "market/base.html" %}
+{% block content %}
+  <div style="text-align:center;margin-bottom:30px;">
+    <h1 style="color:white;margin:0;">🔄 Takaslarım</h1>
+    {% if pending_trades_count > 0 %}
+      <div style="background:rgba(229,62,62,0.9);color:white;padding:12px 24px;border-radius:25px;margin:16px auto 0;max-width:400px;">
+        🔔 {{ pending_trades_count }} bekleyen teklif var!
+      </div>
+    {% endif %}
+  </div>
+  
+  {% for t in trades %}
+    <div class="card">
+      <div style="display:grid;grid-template-columns:1fr auto 1fr auto;gap:20px;align-items:center;">
+        <div style="text-align:center;">
+          <h3 style="margin:0 0 8px 0;color:#2d3748;">{{ t.offered_item.title }}</h3>
+          <span style="color:#667eea;font-size:12px;">
+            {% if t.requester == request.user %}📤 Teklif Ettiğim{% else %}📥 İstenen{% endif %}
+          </span>
+        </div>
+        
+        <div style="font-size:24px;color:#667eea;">
+          {% if t.status == 'pending' %}⏳
+          {% elif t.status == 'accepted' %}✅
+          {% elif t.status == 'rejected' %}❌
+          {% else %}⭕
+          {% endif %}
+        </div>
+        
+        <div style="text-align:center;">
+          <h3 style="margin:0 0 8px 0;color:#2d3748;">{{ t.requested_item.title }}</h3>
+          <span style="color:#667eea;font-size:12px;">
+            {% if t.requester == request.user %}📥 İstediğim{% else %}📤 Teklif Edilen{% endif %}
+          </span>
+        </div>
+        
+        <div style="text-align:center;">
+          <div style="margin-bottom:12px;">
+            <span style="
+              padding:6px 12px;
+              border-radius:20px;
+              font-size:12px;
+              font-weight:600;
+              {% if t.status == 'pending' %}background:#fef5e7;color:#c05621;
+              {% elif t.status == 'accepted' %}background:#f0fff4;color:#2f855a;
+              {% elif t.status == 'rejected' %}background:#fed7d7;color:#c53030;
+              {% else %}background:#edf2f7;color:#4a5568;
+              {% endif %}
+            ">
+              {{ t.get_status_display }}
+            </span>
+          </div>
+          <a class="btn" href="{% url 'market:trade_detail' t.id %}">Detaylar</a>
+        </div>
+      </div>
+    </div>
+  {% empty %}
+    <div class="card" style="text-align:center;padding:60px;">
+      <div style="font-size:48px;margin-bottom:20px;">🤝</div>
+      <h3 style="color:#4a5568;margin:0 0 16px 0;">Henüz takas yok</h3>
+      <p style="color:#718096;margin:0 0 24px 0;">Başkalarının ürünlerine takas teklifi göndererek başlayın!</p>
+      <a href="{% url 'market:index' %}" class="btn">Ürünleri Keşfet</a>
+    </div>
+  {% endfor %}
+{% endblock %}

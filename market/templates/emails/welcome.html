@@ -1,0 +1,52 @@
+{% extends "emails/base.html" %}
+
+{% block title %}Swapzy'ye Hoşgeldiniz! - Swapzy{% endblock %}
+
+{% block content %}
+<h2>🎉 Swapzy'ye Hoşgeldiniz!</h2>
+
+<p>Merhaba <strong>{{ user.first_name|default:user.username }}</strong>,</p>
+
+<p>Swapzy ailesine katıldığınız için çok mutluyuz! 🎊</p>
+
+<div class="info-box">
+    <h3>🚀 Hemen Başlayın</h3>
+    <p>Takasa başlamak için şu adımları takip edebilirsiniz:</p>
+    <p>1. <strong>Ürün Ekleyin:</strong> Takas etmek istediğiniz ürünleri platformda paylaşın</p>
+    <p>2. <strong>Keşfedin:</strong> Diğer kullanıcıların ürünlerini inceleyin</p>
+    <p>3. <strong>Teklif Gönderin:</strong> Beğendiğiniz ürünler için takas teklifi yapın</p>
+    <p>4. <strong>Mesajlaşın:</strong> Takas detaylarını planlayın</p>
+</div>
+
+<div class="info-box">
+    <h3>💎 Platform Özellikleri</h3>
+    <p>🔥 <strong>Swipe Keşfet:</strong> Tinder tarzı ürün keşfi</p>
+    <p>❤️ <strong>Favoriler:</strong> Beğendiğiniz ürünleri kaydedin</p>
+    <p>💬 <strong>Güvenli Mesajlaşma:</strong> Takas öncesi iletişim</p>
+    <p>📱 <strong>Mobil Uyumlu:</strong> Telefondan da kullanabilirsiniz</p>
+    <p>🛡️ <strong>Güvenli Sistem:</strong> Kimlik doğrulaması ve moderasyon</p>
+</div>
+
+<a href="{{ site_url }}{% url 'market:item_create' %}" class="btn">
+    📦 İlk Ürününüzü Ekleyin
+</a>
+
+<p style="margin-top: 30px;">
+    <strong>💡 İpucu:</strong> Ürünlerinize kaliteli fotoğraflar eklemek takas şansınızı artırır!
+</p>
+
+<div class="info-box" style="background: rgba(34, 197, 94, 0.1); border-left-color: #22c55e;">
+    <h3 style="color: #22c55e;">🎁 Özel Hoşgeldin Avantajları</h3>
+    <p>• İlk 30 gün <strong>premium özellikler</strong> ücretsiz</p>
+    <p>• Sınırsız ürün ekleme hakkı</p>
+    <p>• Öncelikli müşteri desteği</p>
+    <p>• Özel hoşgeldin rozetiniz aktif!</p>
+</div>
+
+<p>Sorularınız için bize <a href="mailto:destek@swapzy.com">destek@swapzy.com</a> adresinden ulaşabilirsiniz.</p>
+
+<p>
+    Mutlu takaslar! 🔄<br>
+    <strong>Swapzy Ekibi</strong>
+</p>
+{% endblock %}

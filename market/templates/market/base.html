@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Swapzy - Güvenli Takas Platformu</title>
+  <meta name="description" content="Evinizde atıl duran eşyalarınızı güvenle takas edin. Abiye, oyun konsolu, kitap ve daha fazlası için para kullanmadan takas yapın." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔄</text></svg>" />
+  <link rel="manifest" href="{% url 'market:manifest' %}" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  
+  <!-- Real-time notifications -->
+  {% load static %}
+  <script src="{% static 'js/realtime.js' %}" defer></script>
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Swapzy" />
+  <meta name="theme-color" content="#667eea" />
+  <style>
+    * { box-sizing: border-box; }
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial,sans-serif;margin:0;background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);color:#1a202c;min-height:100vh}
+    .container{max-width:1200px;margin:0 auto;padding:20px}
+    header{background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);box-shadow:0 4px 20px rgba(0,0,0,0.1);border-radius:15px;margin-bottom:20px}
+    .nav-container{padding:16px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap}
+    .logo{font-size:28px;font-weight:700;color:#667eea;text-decoration:none}
+    .nav-links{display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+    .nav-links a{color:#4a5568;text-decoration:none;font-weight:500;transition:color 0.3s;padding:8px 16px;border-radius:8px}
+    .nav-links a:hover{color:#667eea;background:rgba(102,126,234,0.1)}
+    .mobile-highlight{background:linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%) !important;color:white !important;font-weight:700 !important;animation:pulse 2s infinite}
+    .user-info{color:#718096;font-size:14px}
+    .card{background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);border:none;border-radius:15px;padding:24px;margin-bottom:20px;box-shadow:0 8px 32px rgba(0,0,0,0.1);transition:transform 0.3s ease}
+    .card:hover{transform:translateY(-2px)}
+    .btn{display:inline-block;background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);color:#fff;padding:12px 24px;border-radius:10px;text-decoration:none;font-weight:600;transition:all 0.3s;border:none;cursor:pointer;font-size:14px}
+    .btn:hover{transform:translateY(-1px);box-shadow:0 4px 15px rgba(102,126,234,0.4)}
+    .btn.secondary{background:linear-gradient(135deg, #4a5568 0%, #2d3748 100%)}
+    .btn.secondary:hover{box-shadow:0 4px 15px rgba(74,85,104,0.4)}
+    .btn.danger{background:linear-gradient(135deg, #e53e3e 0%, #c53030 100%)}
+    .btn.danger:hover{box-shadow:0 4px 15px rgba(229,62,62,0.4)}
+    .btn.outline{background:transparent;border:2px solid #667eea;color:#667eea}
+    .btn.outline:hover{background:#667eea;color:white}
+    form label{display:block;margin:16px 0 8px;font-weight:600;color:#2d3748}
+    form input, form select, form textarea{width:100%;padding:12px 16px;border:2px solid #e2e8f0;border-radius:10px;transition:border-color 0.3s;background:rgba(255,255,255,0.9)}
+    form input:focus, form select:focus, form textarea:focus{outline:none;border-color:#667eea;box-shadow:0 0 0 3px rgba(102,126,234,0.1)}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px}
+    .item-card{position:relative;overflow:hidden}
+    .item-card img{border-radius:10px;margin-bottom:16px}
+    .item-card h3{margin:0 0 12px 0;color:#2d3748;font-size:18px}
+    .item-card p{color:#718096;margin:0 0 16px 0;line-height:1.5}
+    .category-filter{background:rgba(255,255,255,0.95);padding:20px;border-radius:15px;margin-bottom:20px}
+    .category-filter select{max-width:300px}
+    .hero{text-align:center;color:white;margin-bottom:30px}
+    .hero h1{font-size:48px;margin:0 0 16px 0;font-weight:700}
+    .hero p{font-size:20px;opacity:0.9;margin:0}
+    .stats{display:flex;gap:20px;justify-content:center;margin:20px 0}
+    .stat{background:rgba(255,255,255,0.2);padding:16px 24px;border-radius:12px;color:white;text-align:center}
+    .stat-number{font-size:24px;font-weight:700;display:block}
+    .stat-label{font-size:14px;opacity:0.8}
+    .messages{position:fixed;top:20px;right:20px;z-index:1000;max-width:400px}
+    .messages .card{background:#10b981;color:white;padding:16px;margin-bottom:10px;border-radius:10px;box-shadow:0 4px 20px rgba(16,185,129,0.3)}
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+    @media (max-width: 768px) {
+      .nav-container{flex-direction:column;gap:16px;text-align:center}
+      .nav-links{justify-content:center;flex-wrap:wrap}
+      .hero h1{font-size:36px}
+      .stats{flex-direction:column;align-items:center}
+      .grid{grid-template-columns:1fr}
+      .category-filter form{grid-template-columns:1fr !important;gap:12px !important}
+      .card div[style*="grid-template-columns"]{grid-template-columns:1fr !important;text-align:center !important}
+      .mobile-highlight{
+        background:linear-gradient(135deg, #f093fb 0%, #f5576c 100%) !important;
+        color:white !important;
+        font-weight:700 !important;
+        animation: mobilePulse 2s infinite;
+        box-shadow: 0 4px 20px rgba(240, 147, 251, 0.5) !important;
+        transform: scale(1.1);
+        border: 2px solid rgba(255,255,255,0.3);
+      }
+    }
+    @keyframes mobilePulse {
+      0%, 100% { box-shadow: 0 4px 20px rgba(240, 147, 251, 0.5); }
+      50% { box-shadow: 0 6px 25px rgba(240, 147, 251, 0.8); }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <div class="nav-container">
+        <a href="{% url 'market:index' %}" class="logo">🔄 Swapzy</a>
+        <div class="nav-links">
+          <a href="{% url 'market:swipe_view' %}" class="mobile-highlight">🔥 Keşfet</a>
+          <a href="{% url 'market:advanced_search' %}">🔍 Gelişmiş Arama</a>
+          <a href="{% url 'market:smart_recommendations' %}">🧠 Öneriler</a>
+          <a href="{% url 'market:notifications_list' %}" style="position:relative;">
+            🔔 Bildirimler
+            <span class="notification-badge" style="display: none;"></span>
+          </a>
+          <a href="{% url 'market:live_activity_feed' %}">📊 Canlı Feed</a>
+          <a href="{% url 'market:item_create' %}">+ Ürün Ekle</a>
+          <a href="{% url 'market:my_items' %}">Benim Ürünlerim</a>
+          <a href="{% url 'market:favorites_list' %}">❤️ Favorilerim</a>
+          <a href="{% url 'market:trade_list' %}" style="position:relative;">
+            Takaslarım
+            {% if total_notifications > 0 %}
+              <span style="
+                position:absolute;
+                top:-8px;
+                right:-8px;
+                background:#e53e3e;
+                color:white;
+                border-radius:50%;
+                width:20px;
+                height:20px;
+                font-size:11px;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                font-weight:bold;
+              ">{{ total_notifications }}</span>
+            {% endif %}
+          </a>
+          {% if request.user.is_authenticated %}
+            <span class="user-info">Merhaba, {{ request.user.first_name|default:request.user.username }}</span>
+            <form method="post" action="/accounts/logout/" style="display:inline;">
+              {% csrf_token %}
+              <button type="submit" class="btn outline">Çıkış</button>
+            </form>
+          {% else %}
+            <a href="/accounts/login/" class="btn outline">Giriş</a>
+            <a href="{% url 'market:signup' %}" class="btn">Kayıt Ol</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </header>
+  <main class="container">
+    {% if messages %}
+      <div class="messages">
+        {% for message in messages %}
+          <div class="card">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

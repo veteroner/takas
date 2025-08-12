@@ -1,0 +1,46 @@
+{% extends "market/base.html" %}
+{% block content %}
+  <div style="text-align:center;margin-bottom:30px;">
+    <h1 style="color:white;margin:0;">✨ Kayıt Ol</h1>
+    <p style="color:rgba(255,255,255,0.8);margin:8px 0 0 0;">Swapzy topluluğuna katılın ve takas yapmaya başlayın</p>
+  </div>
+  
+  <div class="card" style="max-width:400px;margin:0 auto;">
+    <form method="post">
+      {% csrf_token %}
+      
+      <div style="margin-bottom:24px;">
+        <label for="{{ form.username.id_for_label }}">👤 Kullanıcı Adı</label>
+        {{ form.username }}
+        {% if form.username.help_text %}
+          <small style="color:#718096;">{{ form.username.help_text }}</small>
+        {% endif %}
+      </div>
+      
+      <div style="margin-bottom:24px;">
+        <label for="{{ form.password1.id_for_label }}">🔒 Şifre</label>
+        {{ form.password1 }}
+        {% if form.password1.help_text %}
+          <small style="color:#718096;">{{ form.password1.help_text }}</small>
+        {% endif %}
+      </div>
+      
+      <div style="margin-bottom:32px;">
+        <label for="{{ form.password2.id_for_label }}">🔐 Şifre Tekrarı</label>
+        {{ form.password2 }}
+        {% if form.password2.help_text %}
+          <small style="color:#718096;">{{ form.password2.help_text }}</small>
+        {% endif %}
+      </div>
+      
+      <div style="text-align:center;margin-bottom:20px;">
+        <button class="btn" type="submit" style="font-size:16px;padding:16px 32px;width:100%;">🚀 Hesap Oluştur</button>
+      </div>
+      
+      <div style="text-align:center;">
+        <p style="color:#718096;margin:0;">Zaten hesabınız var mı?</p>
+        <a href="{% url 'login' %}" style="color:#667eea;font-weight:600;">Giriş yapın</a>
+      </div>
+    </form>
+  </div>
+{% endblock %}

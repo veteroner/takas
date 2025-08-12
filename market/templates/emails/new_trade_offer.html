@@ -1,0 +1,45 @@
+{% extends "emails/base.html" %}
+
+{% block title %}Yeni Takas Teklifi - Swapzy{% endblock %}
+
+{% block content %}
+<h2>🎉 Yeni Takas Teklifi Aldınız!</h2>
+
+<p>Merhaba <strong>{{ recipient.first_name|default:recipient.username }}</strong>,</p>
+
+<p><strong>{{ trade.requester.first_name|default:trade.requester.username }}</strong> sizin <strong>"{{ trade.requested_item.title }}"</strong> ürününüz için bir takas teklifi gönderdi!</p>
+
+<div class="info-box">
+    <h3>📦 Teklif Edilen Ürün</h3>
+    <p><strong>{{ trade.offered_item.title }}</strong></p>
+    <p>{{ trade.offered_item.description|truncatewords:20 }}</p>
+    <p><small>Kategori: {{ trade.offered_item.get_category_display }}</small></p>
+</div>
+
+<div class="info-box">
+    <h3>🎯 İstenen Ürün</h3>
+    <p><strong>{{ trade.requested_item.title }}</strong></p>
+    <p>{{ trade.requested_item.description|truncatewords:20 }}</p>
+    <p><small>Kategori: {{ trade.requested_item.get_category_display }}</small></p>
+</div>
+
+{% if trade.message %}
+<div class="info-box">
+    <h3>💬 Mesaj</h3>
+    <p>"{{ trade.message }}"</p>
+</div>
+{% endif %}
+
+<p>Bu teklifi kabul etmek veya reddetmek için aşağıdaki butona tıklayın:</p>
+
+<a href="{{ site_url }}{% url 'market:trade_detail' trade.pk %}" class="btn">
+    🔍 Teklifi İncele
+</a>
+
+<p><strong>Dikkat:</strong> Teklifler 7 gün sonra otomatik olarak iptal edilir.</p>
+
+<p>
+    İyi takaslar!<br>
+    <strong>Swapzy Ekibi</strong>
+</p>
+{% endblock %}

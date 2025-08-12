@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Swapzy{% endblock %}</title>
+    <style>
+        /* Reset */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        /* Body */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+        
+        /* Container */
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Header */
+        .email-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .email-header h1 {
+            font-size: 28px;
+            margin: 0;
+            font-weight: 700;
+        }
+        
+        .email-header .logo {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        /* Content */
+        .email-content {
+            padding: 40px 30px;
+        }
+        
+        .email-content h2 {
+            color: #2d3748;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        
+        .email-content p {
+            margin-bottom: 16px;
+            color: #4a5568;
+            font-size: 16px;
+        }
+        
+        /* Button */
+        .btn {
+            display: inline-block;
+            padding: 14px 28px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 16px;
+            margin: 20px 0;
+            transition: transform 0.2s ease;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        /* Info Box */
+        .info-box {
+            background: rgba(102, 126, 234, 0.1);
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        
+        .info-box h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        /* Footer */
+        .email-footer {
+            background: #f7fafc;
+            padding: 30px;
+            text-align: center;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .email-footer p {
+            color: #718096;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        
+        .email-footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 600px) {
+            body { padding: 10px; }
+            .email-container { margin: 0; }
+            .email-header, .email-content, .email-footer { padding: 20px; }
+            .email-header h1 { font-size: 24px; }
+            .email-content h2 { font-size: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <!-- Header -->
+        <div class="email-header">
+            <div class="logo">🔄</div>
+            <h1>Swapzy</h1>
+            <p>Güvenli Takas Platformu</p>
+        </div>
+        
+        <!-- Content -->
+        <div class="email-content">
+            {% block content %}{% endblock %}
+        </div>
+        
+        <!-- Footer -->
+        <div class="email-footer">
+            <p>Bu e-posta <strong>Swapzy</strong> tarafından gönderilmiştir.</p>
+            <p>
+                <a href="{{ site_url }}">Ana Sayfa</a> | 
+                <a href="{{ site_url }}/accounts/login/">Giriş Yap</a> | 
+                <a href="{{ unsubscribe_url }}">Abonelikten Çık</a>
+            </p>
+            <p style="margin-top: 20px; font-size: 12px; color: #a0aec0;">
+                © 2025 Swapzy. Tüm hakları saklıdır.<br>
+                Bu otomatik bir mesajdır, lütfen yanıtlamayın.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

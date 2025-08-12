@@ -1,0 +1,37 @@
+{% extends "market/base.html" %}
+{% block content %}
+  <div style="text-align:center;margin-bottom:30px;">
+    <h1 style="color:white;margin:0;">🔐 Giriş Yap</h1>
+    <p style="color:rgba(255,255,255,0.8);margin:8px 0 0 0;">Hesabınıza giriş yaparak takas yapmaya başlayın</p>
+  </div>
+  
+  <div class="card" style="max-width:400px;margin:0 auto;">
+    <form method="post">
+      {% csrf_token %}
+      
+      <div style="margin-bottom:24px;">
+        <label for="{{ form.username.id_for_label }}">👤 Kullanıcı Adı</label>
+        {{ form.username }}
+      </div>
+      
+      <div style="margin-bottom:32px;">
+        <label for="{{ form.password.id_for_label }}">🔒 Şifre</label>
+        {{ form.password }}
+      </div>
+      
+      <div style="text-align:center;margin-bottom:20px;">
+        <button class="btn" type="submit" style="font-size:16px;padding:16px 32px;width:100%;">🚀 Giriş Yap</button>
+      </div>
+      
+      <div style="text-align:center;">
+        <p style="color:#718096;margin:0;">Hesabınız yok mu?</p>
+        <a href="{% url 'market:signup' %}" style="color:#667eea;font-weight:600;">Hemen kayıt olun</a>
+      </div>
+    </form>
+  </div>
+  
+  <div style="text-align:center;margin-top:30px;background:rgba(255,255,255,0.1);border-radius:15px;padding:20px;max-width:400px;margin:30px auto 0;">
+    <p style="color:white;margin:0 0 12px 0;font-weight:600;">🧪 Demo Hesaplar</p>
+    <p style="color:rgba(255,255,255,0.8);margin:0;font-size:14px;">Kullanıcı: <strong>ayse</strong>, <strong>mehmet</strong>, <strong>zehra</strong><br>Şifre: <strong>demo123</strong></p>
+  </div>
+{% endblock %}

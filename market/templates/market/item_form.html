@@ -1,0 +1,109 @@
+{% extends "market/base.html" %}
+{% load static %}
+
+{% block content %}
+  <div style="text-align:center;margin-bottom:30px;">
+    <h1 style="color:white;margin:0;">✨ Yeni Ürün Ekle</h1>
+    <p style="color:rgba(255,255,255,0.8);margin:8px 0 0 0;">Evinizde atıl duran eşyalarınızı paylaşın</p>
+  </div>
+  
+  <div class="card" style="max-width:800px;margin:0 auto;">
+    <form method="post" enctype="multipart/form-data" id="itemForm">
+      {% csrf_token %}
+      
+      <div style="margin-bottom:24px;">
+        <label for="{{ form.title.id_for_label }}">📝 Ürün Başlığı *</label>
+        {{ form.title }}
+        {% if form.title.help_text %}
+          <small style="color:#718096;">{{ form.title.help_text }}</small>
+        {% endif %}
+      </div>
+      
+      <div style="margin-bottom:24px;">
+        <label for="{{ form.description.id_for_label }}">📄 Açıklama</label>
+        {{ form.description }}
+        {% if form.description.help_text %}
+          <small style="color:#718096;">{{ form.description.help_text }}</small>
+        {% endif %}
+      </div>
+      
+      <div style="margin-bottom:24px;">
+        <label for="{{ form.category.id_for_label }}">🏷️ Kategori *</label>
+        {{ form.category }}
+        {% if form.category.help_text %}
+          <small style="color:#718096;">{{ form.category.help_text }}</small>
+        {% endif %}
+      </div>
+      
+      <!-- Modern Multi-Photo Upload -->
+      <div style="margin-bottom:32px;">
+        <label>📸 Ürün Fotoğrafları</label>
+        <p style="color:#718096;font-size:14px;margin:8px 0 16px 0;">
+          Kaliteli fotoğraflar takasınızın başarı şansını artırır! En fazla 10 fotoğraf yükleyebilirsiniz.
+        </p>
+        
+        <!-- Multi-Upload Container -->
+        <div id="multiUploadContainer"></div>
+        
+        <!-- Hidden input for images data -->
+        <input type="hidden" name="images_data" id="imagesData">
+        
+        <!-- Legacy image field (hidden) -->
+        <div style="display: none;">
+          {{ form.image }}
+        </div>
+      </div>
+      
+      <div style="text-align:center;">
+        <button class="btn" type="submit" style="font-size:16px;padding:16px 32px;" id="submitBtn">
+          🚀 Ürünü Paylaş
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Include Multi-Upload JavaScript -->
+  <script src="{% static 'js/multi-upload.js' %}"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize Multi-Photo Uploader
+      multiUploader = new MultiPhotoUploader('multiUploadContainer', {
+        maxFiles: 10,
+        maxFileSize: 5 * 1024 * 1024, // 5MB
+        uploadUrl: '{% url "market:upload_item_image" %}',
+        csrfToken: document.querySelector('[name=csrfmiddlewaretoken]').value
+      });
+      
+      // Form submission handler
+      document.getElementById('itemForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '🔄 Yükleniyor...';
+        
+        // Upload images first
+        multiUploader.uploadFiles().then(function(uploadResults) {
+          // Add uploaded images data to form
+          const imagesData = uploadResults.map(function(result, index) {
+            return {
+              id: result.id,
+              order: index,
+              isPrimary: index === 0
+            };
+          });
+          
+          document.getElementById('imagesData').value = JSON.stringify(imagesData);
+          
+          // Submit the form
+          e.target.submit();
+        }).catch(function(error) {
+          console.error('Upload failed:', error);
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = '🚀 Ürünü Paylaş';
+          alert('Fotoğraf yükleme başarısız. Lütfen tekrar deneyin.');
+        });
+      });
+    });
+  </script>
+{% endblock %}

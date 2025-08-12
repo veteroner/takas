@@ -1,0 +1,60 @@
+{% extends "market/base.html" %}
+{% block content %}
+  <div style="text-align:center;margin-bottom:30px;">
+    <h1 style="color:white;margin:0;">📦 Benim Ürünlerim</h1>
+    <p style="color:rgba(255,255,255,0.8);margin:8px 0 0 0;">Paylaştığınız ürünleri yönetin</p>
+  </div>
+  
+  <div style="text-align:center;margin-bottom:30px;">
+    <a href="{% url 'market:item_create' %}" class="btn" style="font-size:16px;padding:16px 32px;">+ Yeni Ürün Ekle</a>
+  </div>
+  
+  <div class="grid">
+    {% for item in items %}
+      <div class="card item-card">
+        {% if item.image %}
+          <img src="{{ item.image.url }}" alt="{{ item.title }}" style="width:100%;height:200px;object-fit:cover;" />
+        {% else %}
+          <div style="width:100%;height:200px;background:linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#a0aec0;font-size:48px;">
+            {% if item.category == 'evening_dress' %}👗
+            {% elif item.category == 'game_console' %}🎮
+            {% elif item.category == 'game_disc' %}💿
+            {% elif item.category == 'toy' %}🧸
+            {% elif item.category == 'book' %}📚
+            {% else %}🎁
+            {% endif %}
+          </div>
+        {% endif %}
+        <h3>{{ item.title }}</h3>
+        <p>{{ item.description|truncatechars:100 }}</p>
+        
+        <div style="background:#f7fafc;padding:12px;border-radius:8px;margin-bottom:16px;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+            <span style="color:#4a5568;font-size:12px;">📥 Gelen Teklifler:</span>
+            <span style="color:#667eea;font-weight:600;">{{ item.offers_received.count }}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;">
+            <span style="color:#4a5568;font-size:12px;">⏳ Bekleyen:</span>
+            <span style="color:#ed8936;font-weight:600;">{{ item.offers_received.count|default:"0" }}</span>
+          </div>
+        </div>
+        
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <span style="color:#667eea;font-weight:600;font-size:12px;">{{ item.get_category_display }}</span>
+          <a class="btn" href="{% url 'market:item_detail' item.id %}">Görüntüle</a>
+        </div>
+      </div>
+    {% empty %}
+      <div class="card" style="text-align:center;padding:60px;grid-column:1/-1;">
+        <div style="font-size:48px;margin-bottom:20px;">📦</div>
+        <h3 style="color:#4a5568;margin:0 0 16px 0;">Henüz ürün eklememişsiniz</h3>
+        <p style="color:#718096;margin:0 0 24px 0;">İlk ürününüzü ekleyerek takas yapmaya başlayın!</p>
+        <a href="{% url 'market:item_create' %}" class="btn">İlk Ürünümü Ekle</a>
+      </div>
+    {% endfor %}
+  </div>
+  
+  <div style="text-align:center;margin-top:20px;">
+    <a href="{% url 'market:index' %}" class="btn outline">← Ana Sayfaya Dön</a>
+  </div>
+{% endblock %}

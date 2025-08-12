@@ -1,0 +1,72 @@
+{% extends "market/base.html" %}
+{% block content %}
+  <div style="text-align:center;margin-bottom:30px;">
+    <h1 style="color:white;margin:0;">❤️ Favorilerim</h1>
+    <p style="color:rgba(255,255,255,0.8);margin:8px 0 0 0;">Beğendiğiniz ürünler</p>
+  </div>
+  
+  <div class="grid">
+    {% for fav in favorites %}
+      <div class="card item-card">
+        {% if fav.item.image %}
+          <img src="{{ fav.item.image.url }}" alt="{{ fav.item.title }}" style="width:100%;height:200px;object-fit:cover;" />
+        {% else %}
+          <div style="width:100%;height:200px;background:linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#a0aec0;font-size:48px;">
+            {% if fav.item.category == 'evening_dress' %}👗
+            {% elif fav.item.category == 'game_console' %}🎮
+            {% elif fav.item.category == 'game_disc' %}💿
+            {% elif fav.item.category == 'toy' %}🧸
+            {% elif fav.item.category == 'book' %}📚
+            {% else %}🎁
+            {% endif %}
+          </div>
+        {% endif %}
+        
+        <div style="position:absolute;top:12px;right:12px;">
+          <a href="{% url 'market:toggle_favorite' fav.item.id %}" style="
+            background:rgba(229,62,62,0.9);
+            color:white;
+            width:36px;
+            height:36px;
+            border-radius:50%;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            text-decoration:none;
+            font-size:18px;
+          ">❤️</a>
+        </div>
+        
+        <h3>{{ fav.item.title }}</h3>
+        <p>{{ fav.item.description|truncatechars:100 }}</p>
+        
+        <div style="background:#f7fafc;padding:12px;border-radius:8px;margin-bottom:16px;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+            <span style="color:#4a5568;font-size:12px;">📅 Favorilerde:</span>
+            <span style="color:#667eea;font-weight:600;font-size:12px;">{{ fav.created_at|date:"d.m.Y" }}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;">
+            <span style="color:#4a5568;font-size:12px;">🏷️ Kategori:</span>
+            <span style="color:#667eea;font-weight:600;font-size:12px;">{{ fav.item.get_category_display }}</span>
+          </div>
+        </div>
+        
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <a href="{% url 'market:user_profile' fav.item.owner.username %}" style="color:#667eea;font-weight:600;font-size:12px;text-decoration:none;">👤 {{ fav.item.owner.first_name|default:fav.item.owner.username }}</a>
+          <a class="btn" href="{% url 'market:item_detail' fav.item.id %}">İncele</a>
+        </div>
+      </div>
+    {% empty %}
+      <div class="card" style="text-align:center;padding:60px;grid-column:1/-1;">
+        <div style="font-size:48px;margin-bottom:20px;">💔</div>
+        <h3 style="color:#4a5568;margin:0 0 16px 0;">Henüz favoriniz yok</h3>
+        <p style="color:#718096;margin:0 0 24px 0;">Beğendiğiniz ürünleri favorilere ekleyerek kolayca takip edin!</p>
+        <a href="{% url 'market:index' %}" class="btn">Ürünleri Keşfet</a>
+      </div>
+    {% endfor %}
+  </div>
+  
+  <div style="text-align:center;margin-top:20px;">
+    <a href="{% url 'market:index' %}" class="btn outline">← Ana Sayfaya Dön</a>
+  </div>
+{% endblock %}

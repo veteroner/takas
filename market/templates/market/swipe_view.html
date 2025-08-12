@@ -1,0 +1,505 @@
+{% extends "market/base.html" %}
+{% block content %}
+{% csrf_token %}
+<style>
+  /* Swipe Container Styles */
+  .swipe-container {
+    position: relative;
+    max-width: 400px;
+    height: 70vh;
+    margin: 20px auto;
+    perspective: 1000px;
+    overflow: hidden;
+  }
+  
+  .swipe-card {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    cursor: grab;
+    transform-origin: center;
+    transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+    user-select: none;
+    overflow: hidden;
+  }
+  
+  .swipe-card:active {
+    cursor: grabbing;
+  }
+  
+  .swipe-card.dragging {
+    transition: none;
+  }
+  
+  .swipe-card.swiped-right {
+    transform: translateX(100%) rotate(30deg);
+    opacity: 0;
+  }
+  
+  .swipe-card.swiped-left {
+    transform: translateX(-100%) rotate(-30deg);
+    opacity: 0;
+  }
+  
+  .swipe-card.swiped-up {
+    transform: translateY(-100%) rotate(10deg);
+    opacity: 0;
+  }
+  
+  .card-image {
+    width: 100%;
+    height: 60%;
+    object-fit: cover;
+    border-radius: 20px 20px 0 0;
+  }
+  
+  .card-content {
+    padding: 20px;
+    height: 40%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  
+  .card-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #2d3748;
+    margin: 0 0 8px 0;
+  }
+  
+  .card-description {
+    color: #4a5568;
+    font-size: 14px;
+    line-height: 1.4;
+    margin: 0 0 12px 0;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+  
+  .card-owner {
+    color: #667eea;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  
+  .action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 30px;
+    position: relative;
+    z-index: 100;
+  }
+  
+  .action-btn {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  }
+  
+  .action-btn:hover {
+    transform: scale(1.1);
+  }
+  
+  .skip-btn {
+    background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+    color: white;
+  }
+  
+  .like-btn {
+    background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+    color: white;
+  }
+  
+  .trade-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+  }
+  
+  /* Swipe Indicators */
+  .swipe-indicator {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 48px;
+    font-weight: bold;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    z-index: 10;
+  }
+  
+  .like-indicator {
+    right: 20px;
+    color: #48bb78;
+  }
+  
+  .skip-indicator {
+    left: 20px;
+    color: #e53e3e;
+  }
+  
+  .trade-indicator {
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #667eea;
+  }
+  
+  .swipe-card.show-like .like-indicator {
+    opacity: 0.8;
+  }
+  
+  .swipe-card.show-skip .skip-indicator {
+    opacity: 0.8;
+  }
+  
+  .swipe-card.show-trade .trade-indicator {
+    opacity: 0.8;
+  }
+  
+  .no-more-cards {
+    text-align: center;
+    padding: 60px 20px;
+    color: #4a5568;
+  }
+  
+  .placeholder-emoji {
+    width: 100%;
+    height: 60%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 120px;
+    background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+    border-radius: 20px 20px 0 0;
+  }
+  
+  /* Mobile specific styles */
+  @media (max-width: 768px) {
+    .swipe-container {
+      height: 75vh;
+      margin: 10px;
+      max-width: none;
+    }
+    
+    .action-buttons {
+      gap: 20px;
+      margin-top: 20px;
+    }
+    
+    .action-btn {
+      width: 50px;
+      height: 50px;
+      font-size: 20px;
+    }
+  }
+</style>
+
+<div style="text-align:center;margin-bottom:20px;">
+  <h1 style="color:white;margin:0;">🔥 Keşfet</h1>
+  <p style="color:rgba(255,255,255,0.8);margin:8px 0 0 0;">
+    Sağa kaydır: ❤️ Beğen | Sola kaydır: ❌ Geç | Yukarı kaydır: 🔄 Takas
+  </p>
+</div>
+
+<div class="swipe-container" id="swipeContainer">
+  {% for item in items %}
+    <div class="swipe-card" data-item-id="{{ item.id }}">
+      <!-- Swipe Indicators -->
+      <div class="swipe-indicator like-indicator">❤️</div>
+      <div class="swipe-indicator skip-indicator">❌</div>
+      <div class="swipe-indicator trade-indicator">🔄</div>
+      
+      {% if item.image %}
+        <img src="{{ item.image.url }}" alt="{{ item.title }}" class="card-image" />
+      {% else %}
+        <div class="placeholder-emoji">
+          {% if item.category == 'evening_dress' %}👗
+          {% elif item.category == 'game_console' %}🎮
+          {% elif item.category == 'game_disc' %}💿
+          {% elif item.category == 'toy' %}🧸
+          {% elif item.category == 'book' %}📚
+          {% else %}🎁
+          {% endif %}
+        </div>
+      {% endif %}
+      
+      <div class="card-content">
+        <div>
+          <h3 class="card-title">{{ item.title }}</h3>
+          <p class="card-description">{{ item.description|default:"Açıklama eklenmemiş." }}</p>
+        </div>
+        <div class="card-owner">👤 {{ item.owner.first_name|default:item.owner.username }}</div>
+      </div>
+    </div>
+  {% empty %}
+    <div class="no-more-cards">
+      <div style="font-size:48px;margin-bottom:20px;">🎉</div>
+      <h3>Tüm ürünleri gördün!</h3>
+      <p>Yeni ürünler için daha sonra tekrar gel.</p>
+      <a href="{% url 'market:index' %}" class="btn" style="margin-top:20px;">Ana Sayfaya Dön</a>
+    </div>
+  {% endfor %}
+</div>
+
+{% if items %}
+<div class="action-buttons">
+  <button class="action-btn skip-btn" onclick="swipeCard('skip')">❌</button>
+  <button class="action-btn like-btn" onclick="swipeCard('like')">❤️</button>
+  <button class="action-btn trade-btn" onclick="swipeCard('trade')">🔄</button>
+</div>
+{% endif %}
+
+<script>
+let currentCardIndex = {{ items|length|add:"-1" }};
+let isDragging = false;
+let startX = 0;
+let startY = 0;
+let currentX = 0;
+let currentY = 0;
+
+// Touch ve mouse event'lerini handle et
+function initSwipeCards() {
+  const cards = document.querySelectorAll('.swipe-card');
+  
+  cards.forEach((card, index) => {
+    // Z-index ayarla (en üstteki kart en yüksek)
+    card.style.zIndex = cards.length - index;
+    
+    // Event listeners ekle
+    card.addEventListener('mousedown', handleStart);
+    card.addEventListener('touchstart', handleStart, { passive: true });
+    
+    card.addEventListener('mousemove', handleMove);
+    card.addEventListener('touchmove', handleMove, { passive: false });
+    
+    card.addEventListener('mouseup', handleEnd);
+    card.addEventListener('touchend', handleEnd);
+    
+    card.addEventListener('mouseleave', handleEnd);
+  });
+}
+
+function handleStart(e) {
+  const card = e.currentTarget;
+  if (parseInt(card.style.zIndex) !== currentCardIndex + 1) return;
+  
+  isDragging = true;
+  card.classList.add('dragging');
+  
+  const touch = e.touches ? e.touches[0] : e;
+  startX = touch.clientX;
+  startY = touch.clientY;
+}
+
+function handleMove(e) {
+  if (!isDragging) return;
+  e.preventDefault();
+  
+  const card = e.currentTarget;
+  const touch = e.touches ? e.touches[0] : e;
+  
+  currentX = touch.clientX - startX;
+  currentY = touch.clientY - startY;
+  
+  // Kartı hareket ettir
+  const rotation = currentX * 0.1;
+  card.style.transform = `translate(${currentX}px, ${currentY}px) rotate(${rotation}deg)`;
+  
+  // Opacity ayarla
+  const opacity = Math.max(0, 1 - Math.abs(currentX) / 200);
+  card.style.opacity = opacity;
+  
+  // Indicator'ları göster
+  card.classList.remove('show-like', 'show-skip', 'show-trade');
+  
+  if (currentX > 50) {
+    card.classList.add('show-like');
+  } else if (currentX < -50) {
+    card.classList.add('show-skip');
+  } else if (currentY < -50) {
+    card.classList.add('show-trade');
+  }
+}
+
+function handleEnd(e) {
+  if (!isDragging) return;
+  
+  const card = e.currentTarget;
+  isDragging = false;
+  card.classList.remove('dragging');
+  
+  // Swipe threshold'u kontrol et
+  if (Math.abs(currentX) > 100 || Math.abs(currentY) > 100) {
+    let action = 'skip';
+    
+    if (currentX > 100) {
+      action = 'like';
+      card.classList.add('swiped-right');
+    } else if (currentX < -100) {
+      action = 'skip';
+      card.classList.add('swiped-left');
+    } else if (currentY < -100) {
+      action = 'trade';
+      card.classList.add('swiped-up');
+    }
+    
+    setTimeout(() => {
+      performAction(card, action);
+    }, 300);
+  } else {
+    // Kartı orijinal pozisyona geri getir
+    card.style.transform = '';
+    card.style.opacity = '';
+    card.classList.remove('show-like', 'show-skip', 'show-trade');
+  }
+  
+  currentX = 0;
+  currentY = 0;
+}
+
+function swipeCard(action) {
+  const cards = document.querySelectorAll('.swipe-card');
+  const topCard = Array.from(cards).find(card => 
+    parseInt(card.style.zIndex) === currentCardIndex + 1
+  );
+  
+  if (!topCard) return;
+  
+  // Animasyon ekle
+  switch(action) {
+    case 'like':
+      topCard.classList.add('swiped-right');
+      break;
+    case 'skip':
+      topCard.classList.add('swiped-left');
+      break;
+    case 'trade':
+      topCard.classList.add('swiped-up');
+      break;
+  }
+  
+  setTimeout(() => {
+    performAction(topCard, action);
+  }, 300);
+}
+
+function performAction(card, action) {
+  const itemId = card.dataset.itemId;
+  
+  // Kartı kaldır
+  card.style.display = 'none';
+  currentCardIndex--;
+  
+  // Server'a action gönder
+  fetch(`/swipe/action/${itemId}/${action}/`, {
+    method: 'POST',
+    headers: {
+      'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+      'X-Requested-With': 'XMLHttpRequest',
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.status === 'success') {
+      // Başarı mesajı göster
+      showToast(data.message, 'success');
+      
+      // Trade action'ı için redirect
+      if (data.redirect) {
+        setTimeout(() => {
+          window.location.href = data.redirect;
+        }, 1000);
+        return;
+      }
+    } else {
+      showToast(data.message, 'error');
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    showToast('Bir hata oluştu', 'error');
+  });
+  
+  // Eğer kart kalmadıysa yeniden yükle
+  if (currentCardIndex < 0) {
+    setTimeout(() => {
+      window.location.reload();
+    }, 1000);
+  }
+}
+
+// Toast notification
+function showToast(message, type = 'success') {
+  const toast = document.createElement('div');
+  toast.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: ${type === 'success' ? '#48bb78' : '#e53e3e'};
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    z-index: 10000;
+    animation: slideIn 0.3s ease;
+  `;
+  toast.textContent = message;
+  
+  document.body.appendChild(toast);
+  
+  setTimeout(() => {
+    toast.style.animation = 'slideOut 0.3s ease';
+    setTimeout(() => {
+      document.body.removeChild(toast);
+    }, 300);
+  }, 2000);
+}
+
+// CSS animasyonları ekle
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+  @keyframes slideOut {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(100%); opacity: 0; }
+  }
+`;
+document.head.appendChild(style);
+
+// Sayfa yüklendiğinde başlat
+document.addEventListener('DOMContentLoaded', initSwipeCards);
+
+// Klavye kısayolları
+document.addEventListener('keydown', (e) => {
+  switch(e.key) {
+    case 'ArrowLeft':
+      swipeCard('skip');
+      break;
+    case 'ArrowRight':
+      swipeCard('like');
+      break;
+    case 'ArrowUp':
+      swipeCard('trade');
+      break;
+  }
+});
+</script>
+
+{% endblock %}
