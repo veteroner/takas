@@ -26,7 +26,24 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-*6&ljcf1!z5vcyqpzjc11
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1,*.railway.app').split(',')
+
+# Railway domain otomatik olarak ekle
+import socket
+try:
+    railway_host = socket.gethostname()
+    if railway_host not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.append(railway_host)
+except:
+    pass
+
+# Railway production domain'leri ekle
+RAILWAY_DOMAINS = [
+    'web-production-638f7.up.railway.app',
+    '*.up.railway.app',
+    '*.railway.app'
+]
+ALLOWED_HOSTS.extend(RAILWAY_DOMAINS)
 
 
 # Application definition
