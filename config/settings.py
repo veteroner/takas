@@ -117,9 +117,15 @@ DATABASES = {
     }
 }
 
-# Production database configuration
-if 'DATABASE_URL' in os.environ:
-    DATABASES['default'] = dj_database_url.parse(os.environ['DATABASE_URL'])
+# Production database configuration (supports multiple env var names)
+db_url = (
+    os.environ.get('DATABASE_URL')
+    or os.environ.get('POSTGRES_URL')
+    or os.environ.get('PGDATABASE_URL')
+    or os.environ.get('SUPABASE_DB_URL')
+)
+if db_url:
+    DATABASES['default'] = dj_database_url.parse(db_url)
     DATABASES['default']['CONN_MAX_AGE'] = 600
 
 
