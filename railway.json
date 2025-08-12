@@ -13,6 +13,9 @@
     "DJANGO_SETTINGS_MODULE": "config.settings",
     "PYTHONPATH": ".",
     "PORT": "8000"
+  },
+  "processes": {
+    "web": "gunicorn config.wsgi --bind 0.0.0.0:$PORT"
   }
 }
 
