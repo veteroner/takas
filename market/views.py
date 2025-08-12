@@ -83,17 +83,31 @@ def index(request):
     
     categories = Item._meta.get_field('category').choices
     
-    # İstatistikler
+    # İstatistikler (OperationalError durumunda güvenli fallback)
+    from django.db.utils import OperationalError
+    try:
+        total_items = Item.objects.count()
+    except OperationalError:
+        total_items = 0
+    try:
+        total_users = User.objects.count()
+    except OperationalError:
+        total_users = 0
+    try:
+        total_trades = Trade.objects.filter(status=TradeStatus.ACCEPTED).count()
+    except OperationalError:
+        total_trades = 0
+
     context = {
-        "items": items, 
+        "items": items,
         "selected_category": category,
         "search_query": search_query,
         "sort_by": sort_by,
         "sort_options": sort_options,
         "categories": categories,
-        "total_items": Item.objects.count(),
-        "total_users": User.objects.count(),
-        "total_trades": Trade.objects.filter(status=TradeStatus.ACCEPTED).count(),
+        "total_items": total_items,
+        "total_users": total_users,
+        "total_trades": total_trades,
     }
     return render(request, "market/item_list.html", context)
 
